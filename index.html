@@ -1,0 +1,1212 @@
+<title>Kozacka Chatka</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Yeseva+One&family=PT+Sans:wght@400;700&display=swap');
+
+  :root {
+    --bg: #F2ECDD;
+    --bg-2: #E7DDC4;
+    --surface: #FFFDF8;
+    --ink: #241810;
+    --ink-muted: #6E5E49;
+    --line: #D8CBAC;
+    --red: #A63328;
+    --blue: #33507A;
+    --gold: #A87B12;
+    --veg: #4C7A4A;
+    --focus: #33507A;
+    --warn: #8A4B12;
+    --dish-hue: 8;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1B140D;
+      --bg-2: #241A10;
+      --surface: #2A1E14;
+      --ink: #F2E9D8;
+      --ink-muted: #B9A98B;
+      --line: #40311F;
+      --red: #E2604F;
+      --blue: #86A6DA;
+      --gold: #E0B33C;
+      --veg: #8FBB7A;
+      --focus: #86A6DA;
+      --warn: #E0A868;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1B140D;
+    --bg-2: #241A10;
+    --surface: #2A1E14;
+    --ink: #F2E9D8;
+    --ink-muted: #B9A98B;
+    --line: #40311F;
+    --red: #E2604F;
+    --blue: #86A6DA;
+    --gold: #E0B33C;
+    --veg: #8FBB7A;
+    --focus: #86A6DA;
+    --warn: #E0A868;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'PT Sans', -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+  }
+
+  .dish-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .35s ease;
+    background: radial-gradient(ellipse 70% 50% at 50% 20%, hsl(var(--dish-hue) 55% 45% / .30), transparent 65%);
+  }
+  .dish-backdrop.active { opacity: 1; }
+
+  .page { position: relative; z-index: 2; }
+
+  .ribbon { display: flex; height: 12px; }
+  .ribbon span { display: block; }
+  .ribbon span:nth-child(1) { flex: 3; background: var(--red); }
+  .ribbon span:nth-child(2) { flex: 1; background: var(--gold); }
+  .ribbon span:nth-child(3) { flex: 2; background: var(--blue); }
+  .ribbon span:nth-child(4) { flex: 1; background: var(--gold); }
+  .ribbon span:nth-child(5) { flex: 3; background: var(--red); }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+
+  header.hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-2);
+    padding: 30px 0 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 90% at 12% 15%, color-mix(in srgb, var(--red) 30%, transparent), transparent 60%),
+      radial-gradient(ellipse 55% 80% at 88% 25%, color-mix(in srgb, var(--blue) 26%, transparent), transparent 60%),
+      radial-gradient(ellipse 75% 60% at 50% 105%, color-mix(in srgb, var(--gold) 22%, transparent), transparent 65%),
+      repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) 5%, transparent) 0 2px, transparent 2px 16px),
+      linear-gradient(color-mix(in srgb, var(--bg-2) 58%, transparent), color-mix(in srgb, var(--bg-2) 88%, transparent)),
+      var(--hero-photo, none);
+    background-size: auto, auto, auto, auto, cover, cover;
+    background-position: 0 0, 0 0, 0 0, 0 0, center, center;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+    pointer-events: none;
+  }
+  header.hero .wrap { position: relative; z-index: 1; }
+  h1.name {
+    font-family: 'Yeseva One', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.1rem, 7vw, 2.9rem);
+    margin: 0 0 4px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  p.subtitle {
+    margin: 0 0 14px;
+    color: var(--ink-muted);
+    font-size: 0.98rem;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+  .meta-row span { white-space: nowrap; }
+
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0 10px;
+  }
+  .controls-row1 {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .search-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 10px;
+  }
+  .search-field svg { flex: none; color: var(--ink-muted); }
+  .search-field input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.95rem;
+    min-width: 0;
+  }
+  .search-field input::placeholder { color: var(--ink-muted); }
+
+  .lang-group {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+    flex: none;
+  }
+  .lang-group button {
+    appearance: none;
+    border: none;
+    background: var(--surface);
+    color: var(--ink-muted);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 8px 9px;
+    cursor: pointer;
+    border-left: 1px solid var(--line);
+  }
+  .lang-group button:first-child { border-left: none; }
+  .lang-group button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .lang-group button:focus-visible,
+  .search-field input:focus-visible,
+  .chip:focus-visible,
+  .veg-toggle:focus-visible,
+  .allergy-field input:focus-visible,
+  li.dish:focus-visible,
+  .modal-close:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .controls-row2 {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .chips-wrap { position: relative; flex: 1; min-width: 0; }
+  .chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--red) transparent;
+  }
+  .chips::-webkit-scrollbar { height: 7px; }
+  .chips::-webkit-scrollbar-track { background: transparent; }
+  .chips::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  .chips::-webkit-scrollbar-thumb:hover { background: var(--red); }
+  .chips-wrap::before,
+  .chips-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 8px;
+    width: 22px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+    z-index: 1;
+  }
+  .chips-wrap::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg), transparent);
+  }
+  .chips-wrap::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg), transparent);
+  }
+  .chips-wrap.can-scroll-left::before { opacity: 1; }
+  .chips-wrap.can-scroll-right::after { opacity: 1; }
+  .chip {
+    appearance: none;
+    flex: none;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+
+  .veg-toggle {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.78rem;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .veg-toggle .leaf {
+    width: 10px; height: 10px;
+    background: var(--veg);
+    border-radius: 0 70% 0 70%;
+    transform: rotate(45deg);
+    flex: none;
+  }
+  .veg-toggle[aria-pressed="true"] {
+    background: var(--veg);
+    border-color: var(--veg);
+    color: #fff;
+  }
+  .veg-toggle[aria-pressed="true"] .leaf { background: #fff; }
+
+  .controls-row3 { margin-top: 10px; }
+  .allergy-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 10px;
+  }
+  .allergy-field svg { flex: none; color: var(--warn); }
+  .allergy-field input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.9rem;
+    min-width: 0;
+  }
+  .allergy-field input::placeholder { color: var(--ink-muted); }
+  .allergy-note {
+    margin: 6px 2px 0;
+    font-size: 0.72rem;
+    color: var(--warn);
+  }
+
+  main { padding: 10px 0 8px; }
+
+  section.category {
+    padding: 26px 0 6px;
+    scroll-margin-top: 150px;
+  }
+  section.category + section.category {
+    border-top: 1px solid var(--line);
+  }
+  .cat-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  h2.cat-title {
+    font-family: 'Yeseva One', Georgia, serif;
+    font-weight: 400;
+    font-size: 1.3rem;
+    margin: 0;
+    color: var(--red);
+  }
+  .cat-count {
+    font-size: 0.76rem;
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  ul.dishes { list-style: none; margin: 0; padding: 0; }
+  li.dish {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 6px;
+    margin: 0 -6px;
+    border-bottom: 1px dotted var(--line);
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  li.dish:last-child { border-bottom: none; }
+  li.dish:hover, li.dish:focus-visible {
+    background: color-mix(in srgb, var(--red) 6%, transparent);
+  }
+  .dish-thumb {
+    flex: none;
+    width: 52px; height: 52px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--bg-2);
+  }
+  .dish-main { flex: 1; min-width: 0; }
+  .dish-name-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  .dish-name { font-weight: 700; font-size: 0.98rem; }
+  .leaf-mark {
+    width: 8px; height: 8px;
+    background: var(--veg);
+    border-radius: 0 70% 0 70%;
+    transform: rotate(45deg);
+    flex: none;
+  }
+  .dish-desc {
+    color: var(--ink-muted);
+    font-size: 0.84rem;
+    margin-top: 3px;
+  }
+  .dish-weight {
+    color: var(--ink-muted);
+    font-size: 0.76rem;
+    margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .dish-price {
+    flex: none;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 1rem;
+    color: var(--ink);
+    padding-top: 1px;
+  }
+
+  .empty-state {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 0.92rem;
+  }
+
+  footer {
+    position: relative;
+    background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    padding: 22px 0 26px;
+    margin-top: 18px;
+  }
+  footer p {
+    margin: 0 0 6px;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+  }
+  footer .brand {
+    font-family: 'Yeseva One', Georgia, serif;
+    color: var(--ink);
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  footer details {
+    margin-top: 10px;
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+  }
+  footer summary {
+    cursor: pointer;
+    color: var(--ink-muted);
+  }
+  footer .credits-list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    columns: 2;
+    column-gap: 18px;
+    font-size: 0.7rem;
+    line-height: 1.6;
+  }
+  @media (max-width: 480px) { footer .credits-list { columns: 1; } }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--ink) 45%, transparent);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .modal-card {
+    background: var(--surface);
+    width: 100%;
+    max-width: 520px;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 14px 14px 0 0;
+    padding: 0 0 24px;
+    transform: translateY(24px);
+    transition: transform .3s ease;
+    position: relative;
+  }
+  .modal-overlay.open .modal-card { transform: translateY(0); }
+  @media (min-width: 640px) {
+    .modal-overlay { align-items: center; }
+    .modal-card { border-radius: 14px; max-height: 84vh; }
+  }
+  .modal-visual {
+    position: relative;
+    height: 190px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    color: #fff;
+    background: linear-gradient(155deg, hsl(var(--dish-hue) 48% 42%), hsl(var(--dish-hue) 58% 28%));
+    background-size: cover;
+    background-position: center;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+  }
+  .modal-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, color-mix(in srgb, hsl(var(--dish-hue) 55% 20%) 78%, transparent), transparent 55%);
+  }
+  .modal-icon-badge {
+    position: relative;
+    z-index: 1;
+    width: 44px; height: 44px;
+    margin: 14px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 45%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-icon-badge svg { width: 24px; height: 24px; opacity: .95; }
+  .modal-close {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: color-mix(in srgb, var(--ink) 55%, transparent);
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-body { padding: 20px 22px 0; }
+  h3.modal-name {
+    font-family: 'Yeseva One', Georgia, serif;
+    font-weight: 400;
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .modal-price-row {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .modal-price { font-weight: 700; font-size: 1.15rem; color: var(--red); }
+  .modal-weight { color: var(--ink-muted); font-size: 0.85rem; }
+  .modal-desc {
+    font-size: 0.98rem;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+  .modal-section { margin-bottom: 16px; }
+  .modal-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+  }
+  .modal-comp { margin: 0; font-size: 0.9rem; color: var(--ink); }
+  .modal-allergens { display: flex; flex-wrap: wrap; gap: 6px; }
+  .allergen-chip {
+    font-size: 0.76rem;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--warn) 16%, var(--surface));
+    color: var(--warn);
+    border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+  }
+
+  @media (min-width: 720px) {
+    li.dish { padding: 13px 6px; }
+  }
+</style>
+
+<div class="dish-backdrop" id="dishBackdrop"></div>
+
+<div class="page">
+  <div class="ribbon"><span></span><span></span><span></span><span></span><span></span></div>
+
+  <header class="hero">
+    <div class="wrap">
+      <h1 class="name">Kozacka Chatka</h1>
+      <p class="subtitle" data-t="subtitle"></p>
+      <div class="meta-row">
+        <span>ul. Energetyczna 14/1b, Wrocław</span>
+        <span>Pn–Pt 10:00–17:00 · Sb 12:00–17:00</span>
+        <span>tel. 537 312 298</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="wrap">
+      <div class="controls-row1">
+        <label class="search-field">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="search" type="text" data-t-placeholder="search" autocomplete="off" />
+        </label>
+        <div class="lang-group" role="group" aria-label="Language">
+          <button data-lang="pl" aria-pressed="true">PL</button>
+          <button data-lang="uk" aria-pressed="false">UA</button>
+          <button data-lang="ru" aria-pressed="false">RU</button>
+          <button data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+      <div class="controls-row2">
+        <div class="chips-wrap" id="chipsWrap">
+          <div class="chips" id="chips"></div>
+        </div>
+        <button class="veg-toggle" id="vegToggle" aria-pressed="false">
+          <span class="leaf"></span>
+          <span data-t="vegOnly"></span>
+        </button>
+      </div>
+      <div class="controls-row3">
+        <label class="allergy-field">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L21 20 H3 Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>
+          <input id="allergyInput" type="text" data-t-placeholder="allergyPlaceholder" autocomplete="off" />
+        </label>
+        <p class="allergy-note" data-t="allergyNote"></p>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <div id="menu"></div>
+    <div class="empty-state" id="emptyState" hidden data-t="empty"></div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="brand">Kozacka Chatka</div>
+      <p data-t="footer"></p>
+      <p data-t="photoDisclaimer"></p>
+      <p>kozackachatka.pl</p>
+      <details>
+        <summary data-t="photoCreditsLabel"></summary>
+        <ul class="credits-list" id="creditsList"></ul>
+      </details>
+    </div>
+  </footer>
+  <div class="ribbon"><span></span><span></span><span></span><span></span><span></span></div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <button class="modal-close" id="modalClose" aria-label="close">&times;</button>
+    <div class="modal-visual" id="modalVisual"></div>
+    <div class="modal-body">
+      <h3 class="modal-name" id="modalName"></h3>
+      <div class="modal-price-row">
+        <span class="modal-price" id="modalPrice"></span>
+        <span class="modal-weight" id="modalWeight"></span>
+      </div>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-section">
+        <div class="modal-label" id="modalCompLabel"></div>
+        <p class="modal-comp" id="modalComp"></p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-label" id="modalAllergLabel"></div>
+        <div class="modal-allergens" id="modalAllergens"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var STR = {
+    pl: { subtitle: "Kuchnia ukraińska i krymska · Wrocław", search: "Szukaj dania…", vegOnly: "Tylko wegetariańskie", all: "Wszystko", empty: "Nic nie znaleziono. Spróbuj innego zapytania lub alergenu.", footer: "Menu może ulec zmianie bez uprzedzenia. Ceny podane w złotych (PLN).", allergyPlaceholder: "Twoje alergie, np. mleko, jaja, gluten…", allergyNote: "Skład orientacyjny — przy poważnej alergii pytaj obsługę.", compositionLabel: "Skład (orientacyjny)", allergensLabel: "Alergeny", noAllergens: "Brak głównych alergenów w składzie.", photoDisclaimer: "Zdjęcia poglądowe (Wikimedia Commons, wolne licencje) — to wersja demo, nie prawdziwe fotografie dań lokalu.", photoCreditsLabel: "Źródła zdjęć i licencje" },
+    uk: { subtitle: "Українська та кримська кухня · Вроцлав", search: "Пошук страви…", vegOnly: "Лише вегетаріанські", all: "Усі", empty: "Нічого не знайдено. Спробуйте інший запит або алерген.", footer: "Меню може змінюватися без попередження. Ціни вказані у злотих (PLN).", allergyPlaceholder: "Ваші алергії, напр. молоко, яйця, глютен…", allergyNote: "Склад орієнтовний — за серйозної алергії питайте персонал.", compositionLabel: "Склад (орієнтовний)", allergensLabel: "Алергени", noAllergens: "Основних алергенів у складі немає.", photoDisclaimer: "Фото ілюстративні (Wikimedia Commons, вільні ліцензії) — це демо-версія, не справжні фото страв закладу.", photoCreditsLabel: "Джерела фото та ліцензії" },
+    ru: { subtitle: "Украинская и крымская кухня · Вроцлав", search: "Поиск блюда…", vegOnly: "Только вегетарианские", all: "Все", empty: "Ничего не найдено. Попробуйте другой запрос или аллерген.", footer: "Меню может изменяться без предупреждения. Цены указаны в злотых (PLN).", allergyPlaceholder: "Ваши аллергии, напр. молоко, яйца, глютен…", allergyNote: "Состав ориентировочный — при серьёзной аллергии уточняйте у персонала.", compositionLabel: "Состав (ориентировочный)", allergensLabel: "Аллергены", noAllergens: "Основных аллергенов в составе нет.", photoDisclaimer: "Фото иллюстративные (Wikimedia Commons, свободные лицензии) — это демо-версия, не настоящие фото блюд заведения.", photoCreditsLabel: "Источники фото и лицензии" },
+    en: { subtitle: "Ukrainian & Crimean Cuisine · Wrocław", search: "Search dishes…", vegOnly: "Vegetarian only", all: "All", empty: "Nothing found. Try a different search or allergen.", footer: "Menu is subject to change without notice. Prices shown in Polish złoty (PLN).", allergyPlaceholder: "Your allergies, e.g. milk, eggs, gluten…", allergyNote: "Composition is indicative — for serious allergies, please check with staff.", compositionLabel: "Typical composition", allergensLabel: "Allergens", noAllergens: "No major allergens in the composition.", photoDisclaimer: "Photos are illustrative stock images (Wikimedia Commons, free licenses) — this is a demo, not real photos of the venue's dishes.", photoCreditsLabel: "Photo sources & licenses" }
+  };
+
+  var ALLERGEN_LABEL = {
+    gluten:  { pl: "gluten",  uk: "глютен",             ru: "глютен",             en: "gluten" },
+    dairy:   { pl: "nabiał",  uk: "молочні продукти",   ru: "молочные продукты",  en: "dairy" },
+    eggs:    { pl: "jaja",    uk: "яйця",               ru: "яйца",               en: "eggs" },
+    fish:    { pl: "ryby",    uk: "риба",               ru: "рыба",               en: "fish" },
+    mustard: { pl: "gorczyca",uk: "гірчиця",            ru: "горчица",            en: "mustard" },
+    celery:  { pl: "seler",   uk: "селера",             ru: "сельдерей",          en: "celery" }
+  };
+
+  var ALLERGEN_SYNONYMS = {
+    gluten:  ["gluten","глютен","пшениц","мука","борошн","wheat","wheat flour","клейковин"],
+    dairy:   ["nabiał","mleko","milk","молок","молоч","сир","сыр","cheese","dairy","śmietana","сметан","масло","маслa","butter"],
+    eggs:    ["jaja","jajko","egg","яйц","яйце"],
+    fish:    ["ryby","ryba","fish","рыб","риб","łosoś","лосос","śledź","оселедец","сельд"],
+    mustard: ["gorczyca","musztarda","mustard","горчиц","гірчиц"],
+    celery:  ["seler","celery","сельдере","селер"]
+  };
+
+  var CATS = [
+    { key: "starters",  pl: "Przystawki",   uk: "Закуски",             ru: "Закуски",            en: "Starters",                 icon: "starters" },
+    { key: "soups",     pl: "Zupy",         uk: "Супи",                ru: "Супы",               en: "Soups",                    icon: "soups" },
+    { key: "dumplings", pl: "Dania mączne", uk: "Борошняні страви",    ru: "Мучные блюда",       en: "Dumplings & Pancakes",     icon: "dumplings" },
+    { key: "meat",      pl: "Dania mięsne", uk: "М’ясні страви",       ru: "Мясные блюда",       en: "Meat Dishes",              icon: "meat" },
+    { key: "sides",     pl: "Dodatki",      uk: "Гарніри",             ru: "Гарниры",            en: "Sides",                    icon: "sides" },
+    { key: "desserts",  pl: "Desery",       uk: "Десерти",             ru: "Десерты",            en: "Desserts",                 icon: "desserts" },
+    { key: "drinks",    pl: "Napoje",       uk: "Напої",               ru: "Напитки",            en: "Beverages",                icon: "drinks" }
+  ];
+
+  var ICONS = {
+    starters:  '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><circle cx="60" cy="50" r="28"/><circle cx="60" cy="50" r="13"/><line x1="22" y1="24" x2="22" y2="46"/><line x1="16" y1="24" x2="16" y2="40"/><line x1="28" y1="24" x2="28" y2="40"/><line x1="22" y1="46" x2="22" y2="76"/></svg>',
+    soups:     '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M20 48 a30 24 0 0 0 60 0 z"/><line x1="20" y1="48" x2="80" y2="48"/><path d="M38 20 q6 8 0 16"/><path d="M58 20 q6 8 0 16"/><line x1="30" y1="72" x2="70" y2="72"/></svg>',
+    dumplings: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M18 55 a32 22 0 0 1 64 0 a32 22 0 0 1 -64 0 z"/><path d="M50 33 q0 12 0 22"/><path d="M34 40 q6 8 0 14"/><path d="M66 40 q-6 8 0 14"/></svg>',
+    meat:      '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M30 30 a24 24 0 1 1 -6 34"/><path d="M24 64 q-14 6 -12 20 q14 2 20 -12"/></svg>',
+    sides:     '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M26 46 a24 20 0 0 0 48 0 z"/><line x1="26" y1="46" x2="74" y2="46"/><ellipse cx="70" cy="24" rx="6" ry="9"/><line x1="70" y1="33" x2="70" y2="46"/></svg>',
+    desserts:  '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 74 L50 30 L76 74 Z"/><line x1="24" y1="74" x2="76" y2="74"/><circle cx="50" cy="22" r="5"/></svg>',
+    drinks:    '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M34 26 h32 l-5 48 a5 5 0 0 1 -5 4 h-12 a5 5 0 0 1 -5 -4 z"/><line x1="30" y1="26" x2="70" y2="26"/><path d="M40 40 h20"/></svg>'
+  };
+
+  var HUES = [8, 40, 96, 175, 215, 335];
+  function hueFor(name) {
+    var sum = 0;
+    for (var i = 0; i < name.length; i++) sum += name.charCodeAt(i);
+    return HUES[sum % HUES.length];
+  }
+
+  function d(pl, uk, ru, en) { return { pl: pl, uk: uk, ru: ru, en: en }; }
+
+  var DISHES = [
+    { cat: "starters", name: "Pirożki ukraińskie z jajkiem lub ziemniaczkami", w: "4 szt. / 480 g", price: 40, veg: true, allergens: ["gluten","dairy","eggs"],
+      desc: d("Puszyste drożdżowe pierożki prosto z pieca — z jajkiem i szczypiorkiem albo aksamitnym ziemniakiem.", "Пухкі дріжджові пиріжки просто з печі — з яйцем і цибулею або ніжною картоплею.", "Пышные дрожжевые пирожки прямо из печи — с яйцом и луком или нежной картошкой.", "Fluffy oven-fresh pirozhki, filled with egg and scallion or velvety mashed potato."),
+      comp: d("ciasto drożdżowe, jajko lub ziemniak, cebula", "дріжджове тісто, яйце або картопля, цибуля", "дрожжевое тесто, яйцо или картофель, лук", "yeast dough, egg or potato, onion") },
+    { cat: "starters", name: "Śledzik Sułtański", w: "500 g", price: 40, veg: false, allergens: ["fish","eggs","dairy"],
+      desc: d("Śledź w słodko-kwaśnym sosie z jabłkiem i rodzynkami — orientalna nuta na kozackim stole.", "Оселедець у кисло-солодкому соусі з яблуком і родзинками — східна нотка на козацькому столі.", "Сельдь в кисло-сладком соусе с яблоком и изюмом — восточная нотка на казацком столе.", "Herring in a sweet-tangy sauce with apple and raisins — an eastern touch on the Cossack table."),
+      comp: d("śledź, jabłko, cebula, rodzynki, majonez", "оселедець, яблуко, цибуля, родзинки, майонез", "сельдь, яблоко, лук, изюм, майонез", "herring, apple, onion, raisins, mayonnaise") },
+    { cat: "starters", name: "Śledzik w oleju z cebulką", w: "500 g", price: 40, veg: false, allergens: ["fish"],
+      desc: d("Delikatny śledź marynowany w aromatycznym oleju z chrupiącą cebulką.", "Ніжний оселедець у ароматній олії з хрумкою цибулею.", "Нежная сельдь в ароматном масле с хрустящим луком.", "Tender herring in fragrant oil with crisp onion."),
+      comp: d("śledź, olej, cebula", "оселедець, олія, цибуля", "сельдь, масло, лук", "herring, oil, onion") },
+    { cat: "starters", name: "Jajka faszerowane łososiem", w: "10 połówek", price: 60, veg: false, allergens: ["eggs","fish"],
+      desc: d("Kremowe jajka faszerowane pastą z wędzonego łososia i koperkiem.", "Кремові яйця з ніжною пастою з копченого лосося та кропом.", "Кремовые яйца с нежной пастой из копчёного лосося и укропом.", "Creamy deviled eggs with smoked salmon mousse and fresh dill."),
+      comp: d("jajko, łosoś wędzony, majonez, koperek", "яйце, копчений лосось, майонез, кріп", "яйцо, копчёный лосось, майонез, укроп", "egg, smoked salmon, mayonnaise, dill") },
+    { cat: "starters", name: "Caprese włoskie", w: "500 g", price: 60, veg: true, allergens: ["dairy"],
+      desc: d("Soczyste pomidory, kremowa mozzarella i świeża bazylia skropione oliwą.", "Соковиті томати, кремова моцарела і свіжий базилік, скроплені олією.", "Сочные томаты, кремовая моцарелла и свежий базилик, сбрызнутые маслом.", "Juicy tomatoes, creamy mozzarella and fresh basil, drizzled with olive oil."),
+      comp: d("pomidor, mozzarella, bazylia, oliwa", "томат, моцарела, базилік, оливкова олія", "томат, моцарелла, базилик, оливковое масло", "tomato, mozzarella, basil, olive oil") },
+    { cat: "starters", name: "Sałatka Caesar z kurczakiem", w: "500 g", price: 70, veg: false, allergens: ["gluten","dairy","eggs","fish"],
+      desc: d("Chrupiące grzanki, soczysty kurczak i parmezan w klasycznym sosie cezar.", "Хрумкі грінки, соковита курка й пармезан у класичному соусі цезар.", "Хрустящие гренки, сочная курица и пармезан в классическом соусе цезарь.", "Crisp croutons, juicy chicken and parmesan tossed in classic Caesar dressing."),
+      comp: d("kurczak, sałata, grzanki, parmezan, sos cezar", "курка, салат, грінки, пармезан, соус цезар", "курица, салат, гренки, пармезан, соус цезарь", "chicken, lettuce, croutons, parmesan, caesar dressing") },
+    { cat: "starters", name: "Sałatka zielona z rukoli i roszponki z serem blue", w: "500 g", price: 60, veg: true, allergens: ["dairy"],
+      desc: d("Rukola i roszponka z pikantnym serem pleśniowym w lekkim winegret.", "Рукола та валер'янниця з гострим сиром із пліснявою в легкому вінегреті.", "Руккола и валерианелла с пикантным сыром с плесенью в лёгком винегрете.", "Arugula and lamb's lettuce with tangy blue cheese in a light vinaigrette."),
+      comp: d("rukola, roszponka, ser pleśniowy, winegret", "рукола, валер'янниця, сир з пліснявою, вінегрет", "руккола, валерианелла, сыр с плесенью, винегрет", "arugula, lamb's lettuce, blue cheese, vinaigrette") },
+    { cat: "starters", name: "Sałatka Oliwje z kurczakiem", w: "1 kg", price: 70, veg: false, allergens: ["eggs"],
+      desc: d("Klasyczna sałatka oliwier z delikatnym kurczakiem i chrupiącym ogórkiem.", "Класичний олів'є з ніжною курочкою та хрумким огірком.", "Классический оливье с нежной курочкой и хрустящим огурцом.", "Classic Olivier salad with tender chicken and crunchy pickles."),
+      comp: d("ziemniak, marchew, jajko, ogórek konserwowy, kurczak, majonez", "картопля, морква, яйце, огірок консервований, курка, майонез", "картофель, морковь, яйцо, солёный огурец, курица, майонез", "potato, carrot, egg, pickle, chicken, mayonnaise") },
+    { cat: "starters", name: "Śledzik „Pod Szubą”", w: "1 kg", price: 70, veg: false, allergens: ["fish","eggs"],
+      desc: d("Warstwy śledzia, buraka i ziemniaka pod aksamitnym płaszczem majonezu.", "Шари оселедця, буряка й картоплі під ніжною ковдрою майонезу.", "Слои сельди, свёклы и картофеля под нежной шубой майонеза.", "Layers of herring, beetroot and potato under a velvety mayonnaise coat."),
+      comp: d("śledź, ziemniak, marchew, burak, jajko, majonez", "оселедець, картопля, морква, буряк, яйце, майонез", "сельдь, картофель, морковь, свёкла, яйцо, майонез", "herring, potato, carrot, beetroot, egg, mayonnaise") },
+    { cat: "starters", name: "Galareta wieprzowa domowa", w: "1 kg", price: 80, veg: false, allergens: [],
+      desc: d("Domowy galaret wieprzowy z czosnkiem — stara, sprawdzona receptura.", "Домашній холодець зі свинини й часником — перевірений часом рецепт.", "Домашний холодец из свинины с чесноком — проверенный временем рецепт.", "Homemade pork aspic with garlic — a time-tested family recipe."),
+      comp: d("wieprzowina, czosnek, marchew, przyprawy", "свинина, часник, морква, спеції", "свинина, чеснок, морковь, специи", "pork, garlic, carrot, spices") },
+    { cat: "starters", name: "Sałatka Kurczak-Ananas", w: "1 kg", price: 80, veg: false, allergens: ["dairy","eggs"],
+      desc: d("Delikatny kurczak ze słodkim ananasem i serem w lekkim majonezie.", "Ніжна курка із солодким ананасом і сиром у легкому майонезі.", "Нежная курица со сладким ананасом и сыром в лёгком майонезе.", "Tender chicken with sweet pineapple and cheese in a light mayonnaise dressing."),
+      comp: d("kurczak, ananas, ser, majonez", "курка, ананас, сир, майонез", "курица, ананас, сыр, майонез", "chicken, pineapple, cheese, mayonnaise") },
+    { cat: "starters", name: "Sałatka Krabowa", w: "1 kg", price: 80, veg: false, allergens: ["fish","eggs"],
+      desc: d("Orzeźwiająca sałatka z paluszkami krabowymi, kukurydzą i ryżem.", "Освіжаюча салат із крабовими паличками, кукурудзою та рисом.", "Освежающий салат с крабовыми палочками, кукурузой и рисом.", "A refreshing salad with crab sticks, sweetcorn and rice."),
+      comp: d("paluszki krabowe, kukurydza, jajko, ryż, majonez", "крабові палички, кукурудза, яйце, рис, майонез", "крабовые палочки, кукуруза, яйцо, рис, майонез", "crab sticks, corn, egg, rice, mayonnaise") },
+    { cat: "starters", name: "Tort z wątróbki", w: "1 kg", price: 140, veg: false, allergens: ["dairy","eggs","gluten"],
+      desc: d("Warstwowy tort z delikatnego pasztetu z wątróbki — elegancka przystawka.", "Багатошаровий торт із ніжного паштету з печінки — вишукана закуска.", "Многослойный торт из нежного паштета из печени — изысканная закуска.", "A layered pâté cake of silky chicken liver — an elegant starter."),
+      comp: d("wątróbka drobiowa, masło, jajko, cebula, herbatniki", "куряча печінка, масло, яйце, цибуля, печиво", "куриная печень, масло, яйцо, лук, печенье", "chicken liver, butter, egg, onion, biscuit layers") },
+    { cat: "starters", name: "Duża deska mięs, dekoracyjnych mini-kanapeczek i serów", w: "2 kg, na współdzielenie", price: 350, veg: false, allergens: ["gluten","dairy"],
+      desc: d("Bogata deska wędlin, serów i dekoracyjnych kanapeczek na większą grupę.", "Багата дошка ковбасних виробів, сирів і канапе для великої компанії.", "Богатая доска колбасных изделий, сыров и канапе для большой компании.", "A generous sharing board of cured meats, cheeses and canapés."),
+      comp: d("wędliny, mini-kanapki, sery", "ковбасні вироби, міні-канапки, сири", "колбасные изделия, мини-канапе, сыры", "cured meats, mini sandwiches, cheeses") },
+
+    { cat: "soups", name: "Barszcz Ukraiński", w: "450 ml", price: 16, veg: true, allergens: [],
+      desc: d("Rubinowy barszcz na warzywnym wywarze z nutą czosnku.", "Рубіновий борщ на овочевому бульйоні з ноткою часнику.", "Рубиновый борщ на овощном бульоне с ноткой чеснока.", "Ruby-red beet soup on a vegetable broth with a hint of garlic."),
+      comp: d("burak, kapusta, ziemniak, marchew, fasola, czosnek", "буряк, капуста, картопля, морква, квасоля, часник", "свёкла, капуста, картофель, морковь, фасоль, чеснок", "beetroot, cabbage, potato, carrot, beans, garlic") },
+    { cat: "soups", name: "Zupa Gryczana", w: "450 ml", price: 16, veg: true, allergens: [],
+      desc: d("Rozgrzewająca zupa z kaszy gryczanej i korzennych warzyw.", "Зігріваючий суп із гречаної крупи та кореневих овочів.", "Согревающий суп из гречневой крупы и корнеплодов.", "A warming soup of buckwheat groats and root vegetables."),
+      comp: d("kasza gryczana, marchew, ziemniak, cebula", "гречана крупа, морква, картопля, цибуля", "гречневая крупа, морковь, картофель, лук", "buckwheat groats, carrot, potato, onion") },
+    { cat: "soups", name: "Rassolnik", w: "450 ml", price: 16, veg: true, allergens: ["gluten"],
+      desc: d("Pikantna zupa z ogórkiem kiszonym i perłową kaszą.", "Гостра юшка з квашеним огірком і перловою крупою.", "Островатый суп с солёным огурцом и перловой крупой.", "A tangy soup with pickled cucumber and pearl barley."),
+      comp: d("ogórek kiszony, kasza jęczmienna, ziemniak, marchew", "квашений огірок, перлова крупа, картопля, морква", "солёный огурец, перловая крупа, картофель, морковь", "pickled cucumber, pearl barley, potato, carrot") },
+    { cat: "soups", name: "Okroszka", w: "450 ml", price: 20, veg: true, allergens: ["dairy","eggs"],
+      desc: d("Orzeźwiająca zimna zupa na kefirze z chrupiącymi warzywami.", "Освіжаючий холодний суп на кефірі з хрумкими овочами.", "Освежающий холодный суп на кефире с хрустящими овощами.", "A refreshing cold kefir soup with crisp vegetables."),
+      comp: d("kefir, ogórek, rzodkiewka, jajko, koperek", "кефір, огірок, редис, яйце, кріп", "кефир, огурец, редис, яйцо, укроп", "kefir, cucumber, radish, egg, dill") },
+    { cat: "soups", name: "Rosół", w: "450 ml", price: 20, veg: false, allergens: ["celery"],
+      desc: d("Klarowny, złocisty bulion drobiowy — domowe ciepło w misce.", "Прозорий золотистий курячий бульйон — домашнє тепло в мисці.", "Прозрачный золотистый куриный бульон — домашнее тепло в тарелке.", "A clear golden chicken broth — homely warmth in a bowl."),
+      comp: d("kurczak, marchew, seler, pietruszka", "курка, морква, селера, петрушка", "курица, морковь, сельдерей, петрушка", "chicken, carrot, celery root, parsley root") },
+    { cat: "soups", name: "Solanka", w: "450 ml", price: 20, veg: false, allergens: [],
+      desc: d("Gęsta, pikantna zupa z wędlin, oliwek i kiszonego ogórka.", "Густа гостра юшка з ковбасних виробів, оливок і квашеного огірка.", "Густая острая солянка из колбасных изделий, оливок и солёного огурца.", "A hearty, tangy soup of smoked meats, olives and pickles."),
+      comp: d("wędliny, ogórek kiszony, oliwki, cytryna", "ковбасні вироби, квашений огірок, оливки, лимон", "колбасные изделия, солёный огурец, оливки, лимон", "smoked meats, pickles, olives, lemon") },
+
+    { cat: "dumplings", name: "Blin z mięsem", w: "1 szt.", price: 12, veg: false, allergens: ["gluten","eggs","dairy"],
+      desc: d("Cienki naleśnik zawinięty wokół soczystego mięsnego nadzienia.", "Тонкий млинець, загорнутий навколо соковитої м'ясної начинки.", "Тонкий блин, свёрнутый вокруг сочной мясной начинки.", "A thin pancake wrapped around a juicy meat filling."),
+      comp: d("mąka, jajko, mleko, mięso mielone", "борошно, яйце, молоко, м'ясний фарш", "мука, яйцо, молоко, мясной фарш", "flour, egg, milk, minced meat") },
+    { cat: "dumplings", name: "Blin z serem na słodko", w: "1 szt.", price: 12, veg: true, allergens: ["gluten","eggs","dairy"],
+      desc: d("Słodki naleśnik z aksamitnym nadzieniem twarogowym.", "Солодкий млинець з ніжною сирною начинкою.", "Сладкий блин с нежной творожной начинкой.", "A sweet pancake with a velvety curd-cheese filling."),
+      comp: d("mąka, jajko, mleko, twaróg, cukier", "борошно, яйце, молоко, сир кисломолочний, цукор", "мука, яйцо, молоко, творог, сахар", "flour, egg, milk, curd cheese, sugar") },
+    { cat: "dumplings", name: "Warieniki z wątróbką", w: "7 szt.", price: 30, veg: false, allergens: ["gluten"],
+      desc: d("Miękkie pierogi z delikatnym farszem z wątróbki i cebuli.", "М'які вареники з ніжним фаршем із печінки та цибулі.", "Мягкие вареники с нежной начинкой из печени и лука.", "Soft dumplings with a delicate liver and onion filling."),
+      comp: d("ciasto pszenne, wątróbka, cebula", "пшеничне тісто, печінка, цибуля", "пшеничное тесто, печень, лук", "wheat dough, liver, onion") },
+    { cat: "dumplings", name: "Pierogi Ruskie", w: "7 szt.", price: 30, veg: true, allergens: ["gluten","dairy"],
+      desc: d("Klasyczne pierogi z ziemniakiem i twarogiem, podsmażone z cebulką.", "Класичні вареники з картоплею й сиром, обсмажені з цибулею.", "Классические вареники с картофелем и творогом, обжаренные с луком.", "Classic potato and farmer's cheese dumplings, pan-fried with onion."),
+      comp: d("ciasto pszenne, ziemniak, twaróg, cebula", "пшеничне тісто, картопля, сир, цибуля", "пшеничное тесто, картофель, творог, лук", "wheat dough, potato, farmer's cheese, onion") },
+    { cat: "dumplings", name: "Czieburiek", w: "1 szt.", price: 30, veg: false, allergens: ["gluten"],
+      desc: d("Chrupiący, smażony pieróg z soczystym nadzieniem mięsnym — krymski klasyk.", "Хрумкий смажений пиріжок із соковитою м'ясною начинкою — кримська класика.", "Хрустящий жареный пирожок с сочной мясной начинкой — крымская классика.", "A crisp fried pastry with a juicy meat filling — a Crimean classic."),
+      comp: d("ciasto pszenne, mięso mielone, cebula", "пшеничне тісто, м'ясний фарш, цибуля", "пшеничное тесто, мясной фарш, лук", "wheat dough, minced meat, onion") },
+    { cat: "dumplings", name: "Pielmieni", w: "12 szt.", price: 35, veg: false, allergens: ["gluten"],
+      desc: d("Gotowane pierożki z aromatycznym mięsnym nadzieniem, podawane na gorąco.", "Варені пельмені з ароматною м'ясною начинкою, подаються гарячими.", "Варёные пельмени с ароматной мясной начинкой, подаются горячими.", "Boiled dumplings with a fragrant meat filling, served piping hot."),
+      comp: d("ciasto pszenne, mięso mielone, cebula", "пшеничне тісто, м'ясний фарш, цибуля", "пшеничное тесто, мясной фарш, лук", "wheat dough, minced meat, onion") },
+
+    { cat: "meat", name: "Gołubiec", w: "1 szt. / 250 g", price: 19, veg: false, allergens: [],
+      desc: d("Miękki liść kapusty owinięty wokół ryżu i mięsa w sosie pomidorowym.", "М'який капустяний листок, загорнутий навколо рису й м'яса в томатному соусі.", "Мягкий капустный лист, обёрнутый вокруг риса и мяса в томатном соусе.", "A tender cabbage leaf wrapped around rice and meat in tomato sauce."),
+      comp: d("kapusta, ryż, mięso mielone, sos pomidorowy", "капуста, рис, м'ясний фарш, томатний соус", "капуста, рис, мясной фарш, томатный соус", "cabbage, rice, minced meat, tomato sauce") },
+    { cat: "meat", name: "Gryczanik", w: "250 g", price: 19, veg: false, allergens: ["eggs","gluten"],
+      desc: d("Soczysty kotlet z kaszy gryczanej i mięsa, chrupiący z zewnątrz.", "Соковита котлета з гречки та м'яса, хрумка ззовні.", "Сочная котлета из гречки и мяса, хрустящая снаружи.", "A juicy buckwheat-and-meat cutlet, crisp on the outside."),
+      comp: d("kasza gryczana, mięso mielone, jajko, bułka tarta", "гречана крупа, м'ясний фарш, яйце, панірувальні сухарі", "гречневая крупа, мясной фарш, яйцо, панировочные сухари", "buckwheat, minced meat, egg, breadcrumbs") },
+    { cat: "meat", name: "Gulasz „Zaporoski”", w: "250 g", price: 19, veg: false, allergens: [],
+      desc: d("Wołowina duszona godzinami w papryce i pomidorach — kozacka moc.", "Яловичина, тушкована годинами в паприці й томатах — козацька міць.", "Говядина, тушёная часами в паприке и томатах — казацкая мощь.", "Beef slow-braised in paprika and tomato — Cossack-strength comfort food."),
+      comp: d("wołowina, cebula, papryka, pomidor", "яловичина, цибуля, паприка, томат", "говядина, лук, паприка, томат", "beef, onion, paprika, tomato") },
+    { cat: "meat", name: "Karczek w sosie miodowo-musztardowym", w: "200 g", price: 19, veg: false, allergens: ["mustard"],
+      desc: d("Soczysty karczek w słodko-pikantnym sosie miodowo-musztardowym.", "Соковита свиняча шийка в солодко-гострому медово-гірчичному соусі.", "Сочная свиная шея в сладко-остром медово-горчичном соусе.", "Juicy pork neck glazed in a sweet-and-spicy honey-mustard sauce."),
+      comp: d("karczek wieprzowy, miód, musztarda", "свиняча шийка, мед, гірчиця", "свиная шея, мёд, горчица", "pork neck, honey, mustard") },
+    { cat: "meat", name: "Kotlet „Otbiwnaja”", w: "1 szt. / 200 g", price: 20, veg: false, allergens: ["gluten","eggs"],
+      desc: d("Chrupiący kotlet mięsny w złocistej panierce.", "Хрумка м'ясна відбивна в золотистій паніровці.", "Хрустящая мясная отбивная в золотистой панировке.", "A crisp breaded meat cutlet in a golden crust."),
+      comp: d("wieprzowina, jajko, bułka tarta, mąka", "свинина, яйце, панірувальні сухарі, борошно", "свинина, яйцо, панировочные сухари, мука", "pork, egg, breadcrumbs, flour") },
+    { cat: "meat", name: "Pyżyk – kotlecik firmowy", w: "250 g", price: 19, veg: false, allergens: ["gluten","eggs"],
+      desc: d("Firmowy kotlecik według domowej receptury — soczysty w środku.", "Фірмова котлетка за домашнім рецептом — соковита всередині.", "Фирменная котлетка по домашнему рецепту — сочная внутри.", "The house-recipe cutlet — juicy inside, golden outside."),
+      comp: d("mięso mielone, jajko, bułka tarta, cebula", "м'ясний фарш, яйце, панірувальні сухарі, цибуля", "мясной фарш, яйцо, панировочные сухари, лук", "minced meat, egg, breadcrumbs, onion") },
+    { cat: "meat", name: "Kotlet schabowy klasyczny", w: "1 szt. / 220 g", price: 20, veg: false, allergens: ["gluten","eggs"],
+      desc: d("Klasyczny kotlet schabowy — chrupiąca panierka, soczysty środek.", "Класична свиняча відбивна — хрумка паніровка, соковита всередині.", "Классическая свиная отбивная — хрустящая панировка, сочная внутри.", "A classic breaded pork cutlet — crisp crust, juicy centre."),
+      comp: d("schab wieprzowy, jajko, bułka tarta, mąka", "свиняча корейка, яйце, панірувальні сухарі, борошно", "свиная корейка, яйцо, панировочные сухари, мука", "pork loin, egg, breadcrumbs, flour") },
+    { cat: "meat", name: "Pieriec", w: "250 g", price: 20, veg: false, allergens: [],
+      desc: d("Papryka faszerowana ryżem i mięsem w lekkim sosie pomidorowym.", "Перець, фарширований рисом і м'ясом у легкому томатному соусі.", "Перец, фаршированный рисом и мясом в лёгком томатном соусе.", "Bell pepper stuffed with rice and meat in a light tomato sauce."),
+      comp: d("papryka, ryż, mięso mielone, sos pomidorowy", "перець, рис, м'ясний фарш, томатний соус", "перец, рис, мясной фарш, томатный соус", "bell pepper, rice, minced meat, tomato sauce") },
+    { cat: "meat", name: "Azu po tatarsku", w: "350 g", price: 36, veg: false, allergens: [],
+      desc: d("Duszona wołowina z kiszonym ogórkiem — pikantna klasyka tatarska.", "Тушкована яловичина з квашеним огірком — гостра татарська класика.", "Тушёная говядина с солёным огурцом — пряная татарская классика.", "Braised beef with pickled cucumber — a piquant Tatar classic."),
+      comp: d("wołowina, ogórek kiszony, ziemniak, koncentrat pomidorowy", "яловичина, квашений огірок, картопля, томатна паста", "говядина, солёный огурец, картофель, томатная паста", "beef, pickled cucumber, potato, tomato paste") },
+    { cat: "meat", name: "Strogonow", w: "250 g", price: 35, veg: false, allergens: ["dairy"],
+      desc: d("Delikatna wołowina w kremowym sosie śmietanowym.", "Ніжна яловичина в кремовому сметанному соусі.", "Нежная говядина в кремовом сметанном соусе.", "Tender beef strips in a creamy sour-cream sauce."),
+      comp: d("wołowina, cebula, śmietana", "яловичина, цибуля, сметана", "говядина, лук, сметана", "beef, onion, sour cream") },
+
+    { cat: "sides", name: "Buraczki czosnkowe", w: "150 ml", price: 10, veg: true, allergens: [],
+      desc: d("Buraczki z czosnkiem — chłodząca nuta do dań mięsnych.", "Буряк із часником — освіжаюча нотка до м'ясних страв.", "Свёкла с чесноком — освежающая нотка к мясным блюдам.", "Garlicky beetroot relish — a cool note alongside meat dishes."),
+      comp: d("burak, czosnek, olej", "буряк, часник, олія", "свёкла, чеснок, масло", "beetroot, garlic, oil") },
+    { cat: "sides", name: "Marchewka po kozacku", w: "150 ml", price: 10, veg: true, allergens: [],
+      desc: d("Marchewka po kozacku z czosnkiem i przyprawami.", "Морква по-козацьки з часником і спеціями.", "Морковь по-казацки с чесноком и специями.", "Cossack-style spiced carrot with garlic."),
+      comp: d("marchew, czosnek, przyprawy, olej", "морква, часник, спеції, олія", "морковь, чеснок, специи, масло", "carrot, garlic, spices, oil") },
+    { cat: "sides", name: "Ziemniaczki puree", w: "200 g", price: 10, veg: true, allergens: ["dairy"],
+      desc: d("Kremowe puree ziemniaczane na maśle.", "Кремове картопляне пюре на маслі.", "Кремовое картофельное пюре на масле.", "Creamy buttered mashed potato."),
+      comp: d("ziemniak, masło, mleko", "картопля, масло, молоко", "картофель, масло, молоко", "potato, butter, milk") },
+
+    { cat: "desserts", name: "Syrnik", w: "1 szt. / 120 g", price: 16, veg: true, allergens: ["dairy","eggs","gluten"],
+      desc: d("Puszysty sernik z twarogu, podawany na ciepło ze śmietaną.", "Пухкий сирник з сиру кисломолочного, подається теплим зі сметаною.", "Пышный сырник из творога, подаётся тёплым со сметаной.", "A fluffy curd-cheese pancake, served warm with sour cream."),
+      comp: d("twaróg, jajko, mąka, cukier, śmietana", "сир кисломолочний, яйце, борошно, цукор, сметана", "творог, яйцо, мука, сахар, сметана", "curd cheese, egg, flour, sugar, sour cream") },
+    { cat: "desserts", name: "Tiramisu", w: "1 szt. / 120 g", price: 16, veg: true, allergens: ["dairy","eggs","gluten"],
+      desc: d("Kremowe tiramisu z kawą i delikatnym mascarpone.", "Кремове тірамісу з кавою і ніжним маскарпоне.", "Кремовый тирамису с кофе и нежным маскарпоне.", "Creamy tiramisu layered with coffee and delicate mascarpone."),
+      comp: d("mascarpone, jajko, biszkopty, kawa, kakao", "маскарпоне, яйце, бісквіти, кава, какао", "маскарпоне, яйцо, бисквиты, кофе, какао", "mascarpone, egg, ladyfingers, coffee, cocoa") },
+    { cat: "desserts", name: "Mlynci z mlekiem zagęszczonym", w: "2 szt. / 120 g", price: 20, veg: true, allergens: ["gluten","eggs","dairy"],
+      desc: d("Cienkie naleśniki polane słodkim mlekiem skondensowanym.", "Тонкі млинці, политі солодким згущеним молоком.", "Тонкие блинчики, политые сладким сгущённым молоком.", "Thin crepes drizzled with sweet condensed milk."),
+      comp: d("naleśniki (mąka, jajko, mleko), mleko skondensowane", "млинці (борошно, яйце, молоко), згущене молоко", "блинчики (мука, яйцо, молоко), сгущённое молоко", "crepes (flour, egg, milk), condensed milk") },
+
+    { cat: "drinks", name: "Piwa ukraińskie", w: "500 ml", price: 10, veg: true, allergens: ["gluten"],
+      desc: d("Rzemieślnicze piwo z Ukrainy.", "Українське крафтове пиво.", "Украинское крафтовое пиво.", "Craft beer from Ukraine."),
+      comp: d("słód jęczmienny, chmiel, woda", "ячмінний солод, хміль, вода", "ячменный солод, хмель, вода", "malted barley, hops, water") },
+    { cat: "drinks", name: "Woda", w: "1 l", price: 10, veg: true, allergens: [],
+      desc: d("Woda gazowana lub niegazowana.", "Вода з газом або без.", "Вода с газом или без.", "Still or sparkling water."),
+      comp: d("woda źródlana", "джерельна вода", "родниковая вода", "spring water") },
+    { cat: "drinks", name: "Kawa, herbata", w: "200 ml", price: 12, veg: true, allergens: [],
+      desc: d("Aromatyczna kawa lub herbata na zakończenie posiłku.", "Ароматна кава або чай на завершення трапези.", "Ароматный кофе или чай на завершение трапезы.", "Aromatic coffee or tea to finish the meal."),
+      comp: d("kawa lub herbata, woda", "кава або чай, вода", "кофе или чай, вода", "coffee or tea, water") },
+    { cat: "drinks", name: "Kompot", w: "1 l", price: 12, veg: true, allergens: [],
+      desc: d("Tradycyjny kompot owocowy — słodki i orzeźwiający.", "Традиційний фруктовий компот — солодкий і освіжаючий.", "Традиционный фруктовый компот — сладкий и освежающий.", "Traditional fruit compote — sweet and refreshing."),
+      comp: d("owoce, cukier, woda", "фрукти, цукор, вода", "фрукты, сахар, вода", "fruit, sugar, water") },
+    { cat: "drinks", name: "Soki i napoje orzeźwiające", w: "1 l", price: 14, veg: true, allergens: [],
+      desc: d("Świeże soki i orzeźwiające napoje bezalkoholowe.", "Свіжі соки та освіжаючі безалкогольні напої.", "Свежие соки и освежающие безалкогольные напитки.", "Fresh juices and refreshing soft drinks."),
+      comp: d("sok owocowy lub napój bezalkoholowy", "фруктовий сік або безалкогольний напій", "фруктовый сок или безалкогольный напиток", "fruit juice or soft drink") }
+  ];
+
+  var DISH_IMG = [];
+  for (var __i = 1; __i <= 47; __i++) { DISH_IMG.push('images/dish_' + String(__i).padStart(2,'0') + '.jpg'); }
+  var BG_HUT_IMG = 'images/bg_hut.jpg';
+  DISHES.forEach(function (d, i) { d.img = DISH_IMG[i]; });
+  document.querySelector('header.hero').style.setProperty('--hero-photo', 'url(' + BG_HUT_IMG + ')');
+
+  var CREDITS = [
+    { title: "File:Pirozhki - Puff Pastry with Meat.JPG", license: "CC BY-SA 3.0" },
+    { title: "File:Форшмак по-одесски.jpg", license: "CC BY 2.0" },
+    { title: "File:Herring with sour cream and onion and fried potato.jpg", license: "CC BY 2.0" },
+    { title: "File:Deviled Eggs - 3-23-08.jpg", license: "CC BY-SA 2.0" },
+    { title: "File:Caprese salad in homemade.jpg", license: "CC BY 2.0" },
+    { title: "File:Caesar salad (2).jpg", license: "CC BY 2.0" },
+    { title: "File:Beets, bell peppers, and broccoli on mixed greens salad", license: "CC0" },
+    { title: "File:Russian Olivier salad.jpg", license: "CC BY 2.5" },
+    { title: "File:Herring under a fur coat (salad), haute cuisine style.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Racitura Meat Jelly Moldavian Cuisine.JPG", license: "CC BY-SA 3.0" },
+    { title: "File:Big Chicken Salad and Pineapple Juice Campeche.jpg", license: "CC BY-SA 2.0" },
+    { title: "File:Kani Salad dish.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Pate of Chicken Liver.jpg", license: "CC BY-SA 3.0" },
+    { title: "File:Charcuterie board with cheeses, meats, olives.jpg", license: "CC BY 2.0" },
+    { title: "File:Ukrainian borscht.jpg", license: "CC BY 3.0" },
+    { title: "File:Buckwheat porridge in medvedkovo.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Rassolnik (1).jpg", license: "CC BY 2.0" },
+    { title: "File:Kvass-okroshka.jpg", license: "CC BY-SA 3.0" },
+    { title: "File:Bowl of chicken soup.jpg", license: "CC BY-SA 3.0" },
+    { title: "File:Solyanka Soup, Riga, Latvia.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Blini Tanya.jpg", license: "Public domain" },
+    { title: "File:Blini stuffed with vanilla cottage cheese, Veselka.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Varenyky Ukrainian.jpg", license: "CC BY-SA 2.0" },
+    { title: "File:Cheese, potato, and onion pierogi.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Chebureki at Pushkin Literature Restaurant.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Russian Pelmeni (Dumplings), Rostov-on-Don.jpg", license: "CC BY 4.0" },
+    { title: "File:Hungarian stuffed cabbage rolls.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Ground meat cutlet, lunch box of NewDays.jpg", license: "CC0" },
+    { title: "File:Goulash - Savory beef stew with mushrooms and carrots.jpg", license: "CC BY 2.0" },
+    { title: "File:Roasted Pork Neck Meat with Sweet & Sour Sauce.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Champignon Schnitzel Thüngen Schlossstube.JPG", license: "CC BY 3.0" },
+    { title: "File:Hearty plate of skewered grilled meat.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Kotlet schabowy.jpg", license: "CC BY 2.0" },
+    { title: "File:Bell pepper stuffed with clams, wild rice.jpg", license: "CC0" },
+    { title: "File:Japanese style stewed beef, pickled cucumbers.jpg", license: "CC BY 2.0" },
+    { title: "File:Beef Stroganoff-01.jpg", license: "CC BY 2.0" },
+    { title: "File:Beet salad and orange juice.jpg", license: "CC BY-SA 2.0" },
+    { title: "File:Multicolored Salad 1.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Bowl of mashed potatoes, Thanksgiving Dinner.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:RusSyrnikiKissel.JPG", license: "CC BY-SA 3.0" },
+    { title: "File:Dessert Tiramisu.jpg", license: "CC BY 2.0" },
+    { title: "File:Golden Savanna Pancake.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Pint Glass with some beer.jpg", license: "CC BY-SA 2.0" },
+    { title: "File:Glass-of-water.jpg", license: "Public domain" },
+    { title: "File:A small cup of coffee.JPG", license: "CC BY-SA 2.0" },
+    { title: "File:Kompot z suszonych sliwek.JPG", license: "CC BY-SA 4.0" },
+    { title: "File:Cocktail of passion fruit juice and watermelon juice.jpg", license: "CC BY-SA 4.0" },
+    { title: "File:Traditional houses in Tokari, Sumy Oblast, Ukraine.jpg", license: "CC BY 4.0" },
+  ];
+  var creditsListEl = document.getElementById('creditsList');
+  CREDITS.forEach(function (c) {
+    var li = document.createElement('li');
+    li.textContent = c.title.replace(/^File:/, '') + ' — ' + c.license;
+    creditsListEl.appendChild(li);
+  });
+
+  var state = { lang: "pl", cat: "all", q: "", vegOnly: false, allergyTokens: [] };
+
+  var $chips = document.getElementById("chips");
+  var $chipsWrap = document.getElementById("chipsWrap");
+  var $menu = document.getElementById("menu");
+  var $empty = document.getElementById("emptyState");
+  var $search = document.getElementById("search");
+  var $vegToggle = document.getElementById("vegToggle");
+  var $allergyInput = document.getElementById("allergyInput");
+  var $backdrop = document.getElementById("dishBackdrop");
+  var $modalOverlay = document.getElementById("modalOverlay");
+  var $modalClose = document.getElementById("modalClose");
+  var $modalVisual = document.getElementById("modalVisual");
+  var $modalName = document.getElementById("modalName");
+  var $modalPrice = document.getElementById("modalPrice");
+  var $modalWeight = document.getElementById("modalWeight");
+  var $modalDesc = document.getElementById("modalDesc");
+  var $modalCompLabel = document.getElementById("modalCompLabel");
+  var $modalComp = document.getElementById("modalComp");
+  var $modalAllergLabel = document.getElementById("modalAllergLabel");
+  var $modalAllergens = document.getElementById("modalAllergens");
+
+  function buildChips() {
+    $chips.innerHTML = "";
+    var allChip = document.createElement("button");
+    allChip.className = "chip";
+    allChip.dataset.cat = "all";
+    allChip.setAttribute("aria-pressed", state.cat === "all" ? "true" : "false");
+    $chips.appendChild(allChip);
+    CATS.forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "chip";
+      b.dataset.cat = c.key;
+      b.setAttribute("aria-pressed", state.cat === c.key ? "true" : "false");
+      $chips.appendChild(b);
+    });
+    $chips.querySelectorAll(".chip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        state.cat = b.dataset.cat;
+        render();
+        if (state.cat !== "all") {
+          var target = document.getElementById("cat-" + state.cat);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+    updateChipFades();
+  }
+
+  function updateChipFades() {
+    var maxScroll = $chips.scrollWidth - $chips.clientWidth;
+    $chipsWrap.classList.toggle("can-scroll-left", $chips.scrollLeft > 4);
+    $chipsWrap.classList.toggle("can-scroll-right", $chips.scrollLeft < maxScroll - 4);
+  }
+  $chips.addEventListener("scroll", updateChipFades);
+  window.addEventListener("resize", updateChipFades);
+  $chips.addEventListener("wheel", function (e) {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      $chips.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  function parseAllergyInput(raw) {
+    var tokens = raw.toLowerCase().split(/[,;]+/).map(function (t) { return t.trim(); }).filter(Boolean);
+    var matched = [];
+    tokens.forEach(function (tok) {
+      Object.keys(ALLERGEN_SYNONYMS).forEach(function (code) {
+        ALLERGEN_SYNONYMS[code].forEach(function (syn) {
+          if (tok.length >= 3 && (syn.indexOf(tok) !== -1 || tok.indexOf(syn) !== -1)) {
+            if (matched.indexOf(code) === -1) matched.push(code);
+          }
+        });
+      });
+    });
+    return matched;
+  }
+
+  function matches(item) {
+    if (state.vegOnly && !item.veg) return false;
+    if (state.cat !== "all" && item.cat !== state.cat) return false;
+    if (state.allergyTokens.length) {
+      for (var i = 0; i < item.allergens.length; i++) {
+        if (state.allergyTokens.indexOf(item.allergens[i]) !== -1) return false;
+      }
+    }
+    if (state.q) {
+      var q = state.q.toLowerCase();
+      var hay = (item.name + " " + item.desc[state.lang]).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  }
+
+  function openModal(item) {
+    var s = STR[state.lang];
+    var hue = hueFor(item.name);
+    document.documentElement.style.setProperty("--dish-hue", hue);
+    if (item.img) {
+      $modalVisual.style.backgroundImage = "url(" + item.img + ")";
+    } else {
+      $modalVisual.style.backgroundImage = "";
+    }
+    $modalVisual.innerHTML = '<span class="modal-icon-badge">' + (ICONS[item.cat] || "") + '</span>';
+    $modalName.textContent = item.name;
+    $modalPrice.textContent = item.price + " zł";
+    $modalWeight.textContent = item.w;
+    $modalDesc.textContent = item.desc[state.lang];
+    $modalCompLabel.textContent = s.compositionLabel;
+    $modalComp.textContent = item.comp[state.lang];
+    $modalAllergLabel.textContent = s.allergensLabel;
+    $modalAllergens.innerHTML = "";
+    if (item.allergens.length) {
+      item.allergens.forEach(function (code) {
+        var chip = document.createElement("span");
+        chip.className = "allergen-chip";
+        chip.textContent = ALLERGEN_LABEL[code][state.lang];
+        $modalAllergens.appendChild(chip);
+      });
+    } else {
+      var chip = document.createElement("span");
+      chip.className = "allergen-chip";
+      chip.textContent = s.noAllergens;
+      $modalAllergens.appendChild(chip);
+    }
+    $modalOverlay.classList.add("open");
+    $backdrop.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    $modalOverlay.classList.remove("open");
+    $backdrop.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+  $modalClose.addEventListener("click", closeModal);
+  $modalOverlay.addEventListener("click", function (e) {
+    if (e.target === $modalOverlay) closeModal();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeModal();
+  });
+
+  function render() {
+    var s = STR[state.lang];
+    document.documentElement.lang = state.lang;
+    document.querySelectorAll("[data-t]").forEach(function (el) {
+      el.textContent = s[el.getAttribute("data-t")];
+    });
+    document.querySelectorAll("[data-t-placeholder]").forEach(function (el) {
+      el.setAttribute("placeholder", s[el.getAttribute("data-t-placeholder")]);
+    });
+    $chips.querySelectorAll(".chip").forEach(function (b) {
+      var key = b.dataset.cat;
+      b.textContent = key === "all" ? s.all : (CATS.filter(function (c) { return c.key === key; })[0] || {})[state.lang];
+      b.setAttribute("aria-pressed", state.cat === key ? "true" : "false");
+    });
+    document.querySelectorAll(".lang-group button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.lang === state.lang ? "true" : "false");
+    });
+    $vegToggle.setAttribute("aria-pressed", state.vegOnly ? "true" : "false");
+
+    $menu.innerHTML = "";
+    var anyVisible = false;
+    CATS.forEach(function (c) {
+      var items = DISHES.filter(function (it) { return it.cat === c.key && matches(it); });
+      if (state.cat !== "all" && state.cat !== c.key) return;
+      if (!items.length) return;
+      anyVisible = true;
+
+      var section = document.createElement("section");
+      section.className = "category";
+      section.id = "cat-" + c.key;
+
+      var head = document.createElement("div");
+      head.className = "cat-head";
+      var h2 = document.createElement("h2");
+      h2.className = "cat-title";
+      h2.textContent = c[state.lang];
+      var count = document.createElement("span");
+      count.className = "cat-count";
+      count.textContent = items.length;
+      head.appendChild(h2);
+      head.appendChild(count);
+      section.appendChild(head);
+
+      var ul = document.createElement("ul");
+      ul.className = "dishes";
+      items.forEach(function (it) {
+        var li = document.createElement("li");
+        li.className = "dish";
+        li.tabIndex = 0;
+        li.setAttribute("role", "button");
+
+        if (it.img) {
+          var thumb = document.createElement("img");
+          thumb.className = "dish-thumb";
+          thumb.src = it.img;
+          thumb.alt = "";
+          thumb.loading = "lazy";
+          li.appendChild(thumb);
+        }
+
+        var main = document.createElement("div");
+        main.className = "dish-main";
+
+        var nameRow = document.createElement("div");
+        nameRow.className = "dish-name-row";
+        var nameEl = document.createElement("span");
+        nameEl.className = "dish-name";
+        nameEl.textContent = it.name;
+        nameRow.appendChild(nameEl);
+        if (it.veg) {
+          var leaf = document.createElement("span");
+          leaf.className = "leaf-mark";
+          leaf.title = s.vegOnly;
+          nameRow.appendChild(leaf);
+        }
+        main.appendChild(nameRow);
+
+        var desc = document.createElement("div");
+        desc.className = "dish-desc";
+        desc.textContent = it.desc[state.lang];
+        main.appendChild(desc);
+
+        var weight = document.createElement("div");
+        weight.className = "dish-weight";
+        weight.textContent = it.w;
+        main.appendChild(weight);
+
+        var price = document.createElement("div");
+        price.className = "dish-price";
+        price.textContent = it.price + " zł";
+
+        li.appendChild(main);
+        li.appendChild(price);
+        li.addEventListener("click", function () { openModal(it); });
+        li.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(it); }
+        });
+        ul.appendChild(li);
+      });
+      section.appendChild(ul);
+      $menu.appendChild(section);
+    });
+
+    $empty.hidden = anyVisible;
+    updateChipFades();
+  }
+
+  buildChips();
+
+  $search.addEventListener("input", function () {
+    state.q = $search.value.trim();
+    render();
+  });
+  $vegToggle.addEventListener("click", function () {
+    state.vegOnly = !state.vegOnly;
+    render();
+  });
+  $allergyInput.addEventListener("input", function () {
+    state.allergyTokens = parseAllergyInput($allergyInput.value);
+    render();
+  });
+  document.querySelectorAll(".lang-group button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.lang = b.dataset.lang;
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
